@@ -1,0 +1,29 @@
+name: STUDY Docker build
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Получить код
+        uses: actions/checkout@v4
+
+      - name: Подготовить переменные только для проверки Compose
+        run: |
+          cat > .env <<'ENVEOF'
+          POSTGRES_DB=study
+          POSTGRES_USER=study
+          POSTGRES_PASSWORD=ci-only-not-production
+          APP_SECRET=ci-only-secret-not-production
+          APP_TIMEZONE=Asia/Novosibirsk
+          ENVEOF
+
+      - name: Проверить Docker Compose
+        run: docker compose config
+
+      - name: Собрать все Docker-образы проекта
+        run: docker compose build

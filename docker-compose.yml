@@ -1,0 +1,111 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-study}
+      POSTGRES_USER: ${POSTGRES_USER:-study}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-study} -d ${POSTGRES_DB:-study}"]
+      interval: 5s
+      timeout: 5s
+      retries: 15
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: ./backend
+    command: ["sh", "-c", "flask --app run.py db upgrade && gunicorn -b 0.0.0.0:8000 --workers 2 --threads 4 --timeout 120 run:app"]
+    environment:
+      POSTGRES_HOST: db
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: ${POSTGRES_DB:-study}
+      POSTGRES_USER: ${POSTGRES_USER:-study}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      APP_SECRET: ${APP_SECRET}
+      SESSION_COOKIE_SECURE: "true"
+      APP_TIMEZONE: ${APP_TIMEZONE:-Asia/Novosibirsk}
+      PROMO_HOUR: ${PROMO_HOUR:-12}
+      SUPPORT_TELEGRAM: ${SUPPORT_TELEGRAM:-@myrrer}
+      SUPPORT_EMAIL: ${SUPPORT_EMAIL:-gggterakova@gmail.com}
+      TUTOR_TELEGRAM: ${TUTOR_TELEGRAM:-@midnightsun041}
+      TUTOR_EMAIL: ${TUTOR_EMAIL:-alinatarabrina63@gmail.com}
+      STORAGE_BACKEND: local
+      UPLOAD_DIR: /data/uploads
+      MAX_UPLOAD_MB: ${MAX_UPLOAD_MB:-50}
+      RATELIMIT_STORAGE_URI: memory://
+      VAPID_PUBLIC_KEY: ${VAPID_PUBLIC_KEY:-}
+      VAPID_PRIVATE_KEY_FILE: ${VAPID_PRIVATE_KEY_FILE:-}
+      VAPID_SUBJECT: ${VAPID_SUBJECT:-mailto:gggterakova@gmail.com}
+    volumes:
+      - uploads_data:/data/uploads
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+    restart: unless-stopped
+
+  scheduler:
+    build:
+      context: ./backend
+    command: ["python", "scheduler.py"]
+    environment:
+      POSTGRES_HOST: db
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: ${POSTGRES_DB:-study}
+      POSTGRES_USER: ${POSTGRES_USER:-study}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      APP_SECRET: ${APP_SECRET}
+      APP_TIMEZONE: ${APP_TIMEZONE:-Asia/Novosibirsk}
+      PROMO_HOUR: ${PROMO_HOUR:-12}
+      STORAGE_BACKEND: local
+      UPLOAD_DIR: /data/uploads
+      MAX_UPLOAD_MB: ${MAX_UPLOAD_MB:-50}
+      RATELIMIT_STORAGE_URI: memory://
+      VAPID_PUBLIC_KEY: ${VAPID_PUBLIC_KEY:-}
+      VAPID_PRIVATE_KEY_FILE: ${VAPID_PRIVATE_KEY_FILE:-}
+      VAPID_SUBJECT: ${VAPID_SUBJECT:-mailto:gggterakova@gmail.com}
+    volumes:
+      - uploads_data:/data/uploads
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8080/"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+    restart: unless-stopped
+
+  nginx:
+    build:
+      context: ./deploy/nginx
+    ports:
+      - "127.0.0.1:80:8080"
+      - "127.0.0.1:443:8443"
+    volumes:
+      - ./deploy/certs:/etc/nginx/certs:ro
+    depends_on:
+      backend:
+        condition: service_healthy
+      frontend:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  uploads_data:

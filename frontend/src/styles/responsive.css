@@ -1,0 +1,60 @@
+@media (max-width:1100px){
+  .app-shell{grid-template-columns:210px minmax(0,1fr)}
+  .sidebar{padding-left:14px;padding-right:14px}
+  .page-content{padding:24px}
+  .category-grid,.records-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .stats-grid{grid-template-columns:repeat(2,1fr)}
+  .auth-card{grid-template-columns:1fr 1fr}
+}
+
+@media (max-width:760px){
+  .app-shell{display:block}
+  .sidebar{
+    position:fixed;left:0;top:0;width:245px;transform:translateX(-105%);
+    transition:transform .2s ease;box-shadow:12px 0 38px #39271b26
+  }
+  .sidebar.mobile-open{transform:translateX(0)}
+  .mobile-menu,.mobile-close{display:grid}
+  .topbar{height:66px;padding:0 14px}
+  .top-search{display:none}
+  .profile-chip>div{display:none}
+  .page-content{padding:16px}
+  .auth-shell{padding:0}
+  .auth-card{width:100%;min-height:100vh;border-radius:0;display:block}
+  .auth-form-side{min-height:100vh;padding:32px 24px}
+  .auth-art-side{display:none}
+  .form-row,.category-grid,.records-grid,.student-grid,.stats-grid,.support-grid,.visual-feature-strip{grid-template-columns:1fr}
+  .hero{min-height:150px}
+  .split-heading{align-items:stretch;flex-direction:column}
+  .specialization-strip{display:grid}
+  .request-line{align-items:flex-start;flex-direction:column}
+  .notification-panel{position:fixed;right:10px;top:70px;left:10px;width:auto}
+  .data-table{min-width:760px}
+  .table-card{overflow-x:auto}
+  h1{font-size:38px}
+}
+
+@media (max-width:760px){.visual-feature-strip img{max-height:220px}.visual-feature-copy{padding:24px}}
+
+@media (max-width:1100px){
+  .week-calendar{grid-template-columns:repeat(7,190px)}
+  .recurring-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .student-lesson-row{grid-template-columns:150px minmax(0,1fr)}
+  .student-lesson-actions{grid-column:1/-1;grid-template-columns:1fr 1fr}
+}
+
+@media (max-width:760px){
+  .schedule-head-actions,.calendar-toolbar,.calendar-nav{align-items:stretch;flex-direction:column}
+  .calendar-view-switch{display:grid;grid-template-columns:repeat(3,1fr)}
+  .calendar-view-switch button{justify-content:center}
+  .week-calendar{grid-template-columns:repeat(7,78vw)}
+  .month-calendar{grid-template-columns:repeat(7,minmax(72px,1fr));overflow-x:auto}
+  .month-day{min-height:92px}
+  .schedule-list-row{grid-template-columns:1fr auto}
+  .schedule-list-row>.schedule-list-time{grid-column:1/-1}
+  .tutor-only-price{display:none}
+  .recurring-grid{grid-template-columns:1fr}
+  .student-lesson-row{grid-template-columns:1fr}
+  .student-lesson-actions{grid-column:auto;grid-template-columns:1fr}
+  .free-slot-grid{grid-template-columns:repeat(2,1fr)}
+}

@@ -1,0 +1,73 @@
+# Local environment / secrets
+.env
+.env.*
+!.env.example
+*.secret
+*.secrets
+
+# Private keys and certificates
+*.key
+*.pem
+*.p12
+*.pfx
+*.jks
+*.keystore
+id_rsa
+id_rsa.*
+id_ed25519
+id_ed25519.*
+deploy/certs/*
+!deploy/certs/.gitkeep
+
+# Firebase / cloud service credentials
+serviceAccountKey.json
+**/serviceAccountKey.json
+**/*service-account*.json
+**/*service_account*.json
+**/*firebase-admin*.json
+
+# Project secrets directory
+secrets/*
+!secrets/.gitkeep
+
+# User data and databases
+uploads/
+data/
+backups/
+*.sqlite
+*.sqlite3
+*.db
+*.dump
+*.backup
+
+# Python
+__pycache__/
+**/__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+
+# Node / frontend
+node_modules/
+dist/
+build/
+.npm/
+
+# Logs and caches
+*.log
+.cache/
+coverage/
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Local screenshots for report if they may contain secrets
+# Remove this line if teacher explicitly requires screenshots in Git.
+deploy/screenshots/*.png
+deploy/screenshots/*.jpg
+deploy/screenshots/*.jpeg
+!deploy/screenshots/.gitkeep
